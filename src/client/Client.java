@@ -1,6 +1,9 @@
-import javax.net.*;
+package client;
 
-public class Client extends java.{
+import javax.net.*;
+import javax.security.*;
+
+public class Client {
     public Client(){
 
     }
