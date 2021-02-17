@@ -1,4 +1,6 @@
 package client;
+import tools.Request;
+
 import java.net.*;
 import java.io.*;
 import javax.net.ssl.*;
@@ -79,15 +81,28 @@ public class Client {
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String msg;
-            for (;;) {
+
+            boolean run = true;
+            while (run) {
                 System.out.print(">");
                 msg = read.readLine();
-                if (msg.equalsIgnoreCase("quit")) {
-                    break;
+                switch (msg){
+                    case "read":
+                    case "write":
+                    case "create":
+                    case "delete":
+                        System.out.println("Sending request to server");
+                        out.println(msg);
+                        out.flush();
+                        break;
+                    case "quit":
+                        run = false;
+                        System.out.println("Exiting program");
+                        break;
+                    default:
+                        System.out.println("Try: read, write, create, delete, quit.");
+                        break;
                 }
-                System.out.print("sending '" + msg + "' to server...");
-                out.println(msg);
-                out.flush();
                 System.out.println("done");
 
                 System.out.println("received '" + in.readLine() + "' from server\n");
