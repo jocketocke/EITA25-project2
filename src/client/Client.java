@@ -94,6 +94,7 @@ public class Client {
                         System.out.println("Sending request to server");
                         out.println(msg);
                         out.flush();
+                        waitForResponse(in);
                         break;
                     case "quit":
                         run = false;
@@ -105,7 +106,6 @@ public class Client {
                 }
                 System.out.println("done");
 
-                System.out.println("received '" + in.readLine() + "' from server\n");
             }
             in.close();
             out.close();
@@ -114,6 +114,9 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    public static void waitForResponse(BufferedReader in) throws IOException {
+        System.out.println("received '" + in.readLine() + "' from server\n");
     }
 
 }
