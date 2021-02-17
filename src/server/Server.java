@@ -1,7 +1,13 @@
 package server;
+import server.persons.Person;
+
 import java.io.*;
 import java.net.*;
 import java.security.KeyStore;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import javax.net.*;
 import javax.net.ssl.*;
 import javax.security.cert.X509Certificate;
@@ -9,6 +15,10 @@ import javax.security.cert.X509Certificate;
 public class Server implements Runnable {
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
+
+    private Person connectedPerson;
+
+    private Map<String, LinkedList<MedicalRecord>> medicalRecords = new HashMap<String, LinkedList<MedicalRecord>>();
 
     public Server(ServerSocket ss) throws IOException {
         serverSocket = ss;
@@ -24,6 +34,7 @@ public class Server implements Runnable {
             String subject = cert.getSubjectDN().getName();
             String issuer = cert.getIssuerDN().getName();
             String serial = cert.getSerialNumber().toString();
+            connectedPerson = new Person(cert.getSubjectDN().getName());
             numConnectedClients++;
             System.out.println("client connected");
             System.out.println("client name (cert subject DN field): " + subject);
@@ -38,10 +49,20 @@ public class Server implements Runnable {
 
             String clientMsg = null;
             while ((clientMsg = in.readLine()) != null) {
-                String rev = new StringBuilder(clientMsg).reverse().toString();
                 System.out.println("received '" + clientMsg + "' from client");
-                System.out.print("sending '" + rev + "' to client...");
-                out.println(rev);
+                String[] input = clientMsg.split(",");
+
+                switch (input[0]) {
+                    case "read" :
+                        LinkedList<MedicalRecord> records = medicalRecords.get(input[1]);
+                        for (MedicalRecord temp : records) {
+                            temp.readMedicalRecord(connectedPerson);
+                        }
+                        break;
+                }
+
+                System.out.print("sending '"  + "' to client...");
+                out.println("hej");
                 out.flush();
                 System.out.println("done\n");
             }
@@ -89,8 +110,8 @@ public class Server implements Runnable {
                 KeyStore ts = KeyStore.getInstance("JKS");
                 char[] password = "password".toCharArray();
 
-                ks.load(new FileInputStream("/h/d8/n/jo1732mo-s/Programmering/datasäkerhet/EITA25-project2/src/server/serverkeystore"), password);  // keystore password (storepass)
-                ts.load(new FileInputStream("/h/d8/n/jo1732mo-s/Programmering/datasäkerhet/EITA25-project2/src/server/servertruststore"), password); // truststore password (storepass)
+                ks.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/server/serverkeystore"), password);  // keystore password (storepass)
+                ts.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/server/servertruststore"), password); // truststore password (storepass)
                 kmf.init(ks, password); // certificate password (keypass)
                 tmf.init(ts);  // possible to use keystore as truststore here
                 ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
