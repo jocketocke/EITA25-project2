@@ -71,7 +71,7 @@ public class Server implements Runnable {
             ServerSocketFactory ssf = getServerSocketFactory(type);
             ServerSocket ss = ssf.createServerSocket(port);
             ((SSLServerSocket)ss).setNeedClientAuth(true); // enables client authentication
-            new server(ss);
+            new Server(ss);
         } catch (IOException e) {
             System.out.println("Unable to start Server: " + e.getMessage());
             e.printStackTrace();
@@ -89,8 +89,8 @@ public class Server implements Runnable {
                 KeyStore ts = KeyStore.getInstance("JKS");
                 char[] password = "password".toCharArray();
 
-                ks.load(new FileInputStream("/home/isakwahlqvist/Desktop/EIT25/Project1/serverkeystore"), password);  // keystore password (storepass)
-                ts.load(new FileInputStream("/home/isakwahlqvist/Desktop/EIT25/Project1/servertruststore"), password); // truststore password (storepass)
+                ks.load(new FileInputStream("/h/d8/n/jo1732mo-s/Programmering/datasäkerhet/EITA25-project2/src/server/serverkeystore"), password);  // keystore password (storepass)
+                ts.load(new FileInputStream("/h/d8/n/jo1732mo-s/Programmering/datasäkerhet/EITA25-project2/src/server/servertruststore"), password); // truststore password (storepass)
                 kmf.init(ks, password); // certificate password (keypass)
                 tmf.init(ts);  // possible to use keystore as truststore here
                 ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
