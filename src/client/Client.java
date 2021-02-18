@@ -45,7 +45,7 @@ public class Client {
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
                 SSLContext ctx = SSLContext.getInstance("TLS");
-                ks.load(new FileInputStream("client/doctorkeystore"), password);  // keystore password (storepass)
+                ks.load(new FileInputStream("client/patientkeystore"), password);  // keystore password (storepass)
                 ts.load(new FileInputStream("client/clienttruststore"), password); // truststore password (storepass);
                 kmf.init(ks, password); // user password (keypass)
                 tmf.init(ts); // keystore can be used as truststore here
@@ -103,6 +103,9 @@ public class Client {
                         System.out.println("Sending request to server");
                         out.println(msg + "," + person);
                         String recordsFromServer = in.readLine();
+                        if(recordsFromServer.equals("Unauthorized user")){
+                            break;
+                        }
                         recordsFromServer = recordsFromServer.replaceAll(";", "\n");
                         String[] records = recordsFromServer.split(",");
                         int selected = 0;
@@ -115,7 +118,6 @@ public class Client {
                             }
                             System.out.println("Select>");
                             selected = Integer.parseInt(read.readLine());
-                            System.out.println(selected);
                         }
                         System.out.println("> Write new log: ");
                         String log = read.readLine();
@@ -125,7 +127,6 @@ public class Client {
                             outputRecordsToServer = outputRecordsToServer + records[i] + ",";
                         }
                         outputRecordsToServer = outputRecordsToServer.replaceAll("\n", ";");// new line replacement
-                        System.out.println(outputRecordsToServer);
                         out.println(outputRecordsToServer);
                         out.flush();
                         waitForResponse(in);
@@ -150,7 +151,7 @@ public class Client {
                         System.out.println("Try: read, write, create, delete, quit.");
                         break;
                 }
-                System.out.println("done\n");
+                System.out.println("returning to options\n");
 
             }
             in.close();

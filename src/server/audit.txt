@@ -1,2 +1,6 @@
 Doktor Proktor called create at 2021-02-18T11:20:22.234
 Doktor Proktor called readMedicalRecord at 2021-02-18T11:20:34.281
+Doktor Proktor called create at 2021-02-18T12:28:36.132804
+Doktor Proktor called create at 2021-02-18T12:28:43.457608
+Aleko L tried to call readMedicalRecord but failed at 2021-02-18T12:28:56.807532
+Aleko L called readMedicalRecord at 2021-02-18T12:28:59.565938

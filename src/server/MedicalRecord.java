@@ -41,13 +41,7 @@ public class MedicalRecord {
     }
 
     public String readMedicalRecord(Person person){
-        if(person.getName().equals(patient) || person.getType().equals("Government")){
-            auditLog.log(person, true, "readMedicalRecord");
-            return medicalData;
-        }else if(person.getDivision().equals(division) && !person.getType().equals("patient")){
-            auditLog.log(person, true, "readMedicalRecord");
-            return medicalData;
-        }else if(authorizedUsers.contains(person.getName())){
+        if(checkAuthorized(person, "read")){
             auditLog.log(person, true, "readMedicalRecord");
             return medicalData;
         }else{
@@ -56,10 +50,25 @@ public class MedicalRecord {
         }
     }
 
-    public void writeMedicalRecord(Person person, String medicalData){
-        if(authorizedUsers.contains(person.getName())){
+    private boolean checkAuthorized(Person person, String request){
+        switch (request){
+            case "read":
+                return (person.getName().equals(patient) || person.getType().equals("Government"))
+                        || (person.getDivision().equals(division) && !person.getType().equals("Patient"))
+                        || (authorizedUsers.contains(person.getName()));
+            case "write":
+                return authorizedUsers.contains(person.getName());
+            case "delete":
+                return person.getType().equals("Government");
+        }
+        return false;
+    }
+
+    public boolean writeMedicalRecord(Person person, String medicalData){
+        if(checkAuthorized(person, "write")){
             auditLog.log(person, true, "writeMedicalRecord");
             this.medicalData = medicalData;
+            return true;
         }else{
             try {
                 throw new IOException();
@@ -67,6 +76,7 @@ public class MedicalRecord {
                 e.printStackTrace();
             }
             auditLog.log(person, false, "writeMedicalRecord");
+            return false;
         }
     }
 }

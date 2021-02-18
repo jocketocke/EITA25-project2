@@ -17,7 +17,7 @@ public class AuditLog {
 
     public void log(Person person, boolean bool, String s){
         try{
-            File auditLog = new File("server/" + filename);
+            File auditLog = new File("src/server/" + filename);
             Scanner reader = new Scanner(auditLog);
             stringBuilder = new StringBuilder();
             while(reader.hasNextLine()){
@@ -32,7 +32,7 @@ public class AuditLog {
                 stringBuilder.append(person.getName() + " tried to call " + s + " but failed at " + LocalDateTime.now() + "\n");
             }
 
-            FileWriter writer = new FileWriter("server/" + filename);
+            FileWriter writer = new FileWriter("src/server/" + filename);
             writer.write(stringBuilder.toString());
             writer.close();
             System.out.println("Wrote to auditLog");

@@ -60,8 +60,14 @@ public class Server implements Runnable {
                     case "read" :
                         String s = readMedicalRecord(records);
                         sb = new StringBuilder(s);
+                        if(sb.toString().contains(",")){
+                            sb.append("Read records");
+                        }else{
+                            sb.append("Unauthorized user");
+                        }
                         break;
                     case "create" :
+
                         MedicalRecord record = new MedicalRecord(input[1], input[3], connectedPerson, input[2], auditLog);
                         if(record.exists()) {
                             if (medicalRecords.containsKey(input[1])) {
@@ -80,23 +86,28 @@ public class Server implements Runnable {
                         //input[1] = patient
                         out.println(readMedicalRecord(records));
                         String changedRecord = in.readLine();
-                        System.out.println(changedRecord);
                         changedRecord = changedRecord.replaceAll(";", "\n");
                         String[] changedRecords = changedRecord.split(",");
                         int index = 0;
+                        boolean successful = false;
                         for (MedicalRecord temp : records) {
                             String medicalData = temp.readMedicalRecord(connectedPerson);
                             if(medicalData.equals("Unauthorized user")){
                                 continue;
                             }
-                            System.out.println("before: " + medicalData);
-                            temp.writeMedicalRecord(connectedPerson, changedRecords[index]);
+                            if(temp.writeMedicalRecord(connectedPerson, changedRecords[index]) && !successful){
+                                successful = true;
+                            }
                             index++;
                         }
                         medicalRecords.put(input[1], records);
+                        if(successful){
+                            sb.append("Wrote to records");
+                        }else{
+                            sb.append("Unauthorized user");
+                        }
                         break;
                     case "delete" :
-                        System.out.println(connectedPerson.getType());
                         if(connectedPerson.getType().equals("Government")) {
                             medicalRecords.remove(input[1]);
                             auditLog.log(connectedPerson, true, "delete");
@@ -184,8 +195,8 @@ public class Server implements Runnable {
                 KeyStore ts = KeyStore.getInstance("JKS");
                 char[] password = "password".toCharArray();
 
-                ks.load(new FileInputStream("server/serverkeystore"), password);  // keystore password (storepass)
-                ts.load(new FileInputStream("server/servertruststore"), password); // truststore password (storepass)
+                ks.load(new FileInputStream("src/server/serverkeystore"), password);  // keystore password (storepass)
+                ts.load(new FileInputStream("src/server/servertruststore"), password); // truststore password (storepass)
                 kmf.init(ks, password); // certificate password (keypass)
                 tmf.init(ts);  // possible to use keystore as truststore here
                 ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
