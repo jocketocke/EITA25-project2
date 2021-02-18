@@ -74,6 +74,13 @@ public class Server implements Runnable {
                         }
                         sb.append("Created record");
                         break;
+                    case "delete" :
+                        if(connectedPerson.getType().equals("government")) {
+                            medicalRecords.remove(input[1]);
+                            sb.append("Deleted records");
+                        } else {
+                            sb.append("Unauthorized user");
+                        }
 
                 }
 
