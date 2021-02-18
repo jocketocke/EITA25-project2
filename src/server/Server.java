@@ -52,21 +52,33 @@ public class Server implements Runnable {
                 System.out.println("received '" + clientMsg + "' from client");
                 String[] input = clientMsg.split(",");
 
+                StringBuilder sb = new StringBuilder();
+
                 switch (input[0]) {
                     case "read" :
                         LinkedList<MedicalRecord> records = medicalRecords.get(input[1]);
                         for (MedicalRecord temp : records) {
-                            temp.readMedicalRecord(connectedPerson);
+                            sb.append(temp.readMedicalRecord(connectedPerson));
+                            sb.append(",");
                         }
                         break;
                     case "create" :
-
+                        MedicalRecord record = new MedicalRecord(input[1], input[3], connectedPerson, input[2], null);
+                        if(medicalRecords.containsKey(input[1])) {
+                            medicalRecords.get(input[1]).add(record);
+                        } else {
+                            records = new LinkedList<MedicalRecord>();
+                            records.add(record);
+                            medicalRecords.put(input[1], records);
+                        }
+                        sb.append("Created record");
                         break;
 
                 }
 
-                System.out.print("sending '"  + "' to client...");
-                out.println("hej");
+                String returnMessage = sb.toString();
+                System.out.print("sending '" + returnMessage  + "' to client...");
+                out.println(returnMessage);
                 out.flush();
                 System.out.println("done\n");
             }

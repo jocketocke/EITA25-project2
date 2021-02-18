@@ -131,7 +131,7 @@ public class Client {
                         System.out.println("Try: read, write, create, delete, quit.");
                         break;
                 }
-                System.out.println("done");
+                System.out.println("done\n");
 
             }
             in.close();
