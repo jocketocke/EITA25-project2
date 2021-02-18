@@ -88,12 +88,26 @@ public class Client {
                 msg = read.readLine();
                 switch (msg){
                     case "read":
-                    case "write":
                     case "delete":
                         System.out.print("Patient> ");
                         String person = read.readLine();
                         System.out.println("Sending request to server");
                         out.println(msg + "," + person);
+                        out.flush();
+                        waitForResponse(in);
+                        break;
+                    case "write":
+                        System.out.print("Patient> ");
+                        person = read.readLine();
+                        System.out.println("Sending request to server");
+                        String tmp = in.readLine();
+                        if(tmp.equals("Invalid request"){
+                            break;
+                        }
+                        System.out.println(tmp);
+                        System.out.println("> Write new log: ");
+                        String log = read.readLine();
+                        out.println(log);
                         out.flush();
                         waitForResponse(in);
                         break;
