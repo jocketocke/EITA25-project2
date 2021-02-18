@@ -59,6 +59,10 @@ public class Server implements Runnable {
                             temp.readMedicalRecord(connectedPerson);
                         }
                         break;
+                    case "create" :
+
+                        break;
+
                 }
 
                 System.out.print("sending '"  + "' to client...");

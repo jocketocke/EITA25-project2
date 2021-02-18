@@ -45,7 +45,7 @@ public class Client {
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
                 SSLContext ctx = SSLContext.getInstance("TLS");
-                ks.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/client/patientkeystore"), password);  // keystore password (storepass)
+                ks.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/client/doctorkeystore"), password);  // keystore password (storepass)
                 ts.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/client/clienttruststore"), password); // truststore password (storepass);
                 kmf.init(ks, password); // user password (keypass)
                 tmf.init(ts); // keystore can be used as truststore here
@@ -89,12 +89,23 @@ public class Client {
                 switch (msg){
                     case "read":
                     case "write":
-                    case "create":
                     case "delete":
-                        System.out.print("Person> ");
+                        System.out.print("Patient> ");
                         String person = read.readLine();
                         System.out.println("Sending request to server");
                         out.println(msg + "," + person);
+                        out.flush();
+                        waitForResponse(in);
+                        break;
+                    case "create":
+                        System.out.print("Patient> ");
+                        person = read.readLine();
+                        System.out.print("Nurse> ");
+                        String nurse = read.readLine();
+                        System.out.print("Record> ");
+                        String record = read.readLine();
+                        System.out.println("Sending request to server");
+                        out.println(msg + "," + person + "," + nurse + "," + record);
                         out.flush();
                         waitForResponse(in);
                         break;
