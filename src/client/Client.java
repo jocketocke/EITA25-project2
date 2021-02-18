@@ -76,6 +76,7 @@ public class Client {
             System.out.println("certificate name (serial field) on certificate received from server:\n" + serial + "\n");
             System.out.println("socket after handshake:\n" + socket + "\n");
             System.out.println("secure connection established\n\n");
+            System.out.println("Options: read, write, create, delete, quit \n");
 
             BufferedReader read = new BufferedReader(new InputStreamReader(System.in));
             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);

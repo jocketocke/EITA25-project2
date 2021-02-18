@@ -22,6 +22,9 @@ public class MedicalRecord {
                 }
                 this.medicalData = medicalData;
                 this.auditLog = auditLog;
+                auditLog.log(doctor, true, "create");
+            } else {
+                auditLog.log(doctor, false, "create");
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -30,16 +33,16 @@ public class MedicalRecord {
 
     public String readMedicalRecord(Person person){
         if(person.getName().equals(patient) || person.getType().equals("government")){
-            auditLog.log(person, true, "getMedicalRecord");
+            auditLog.log(person, true, "readMedicalRecord");
             return medicalData;
         }else if(person.getDivision().equals(division) && !person.getType().equals("patient")){
-            auditLog.log(person, true, "getMedicalRecord");
+            auditLog.log(person, true, "readMedicalRecord");
             return medicalData;
         }else if(authorizedUsers.contains(person.getName())){
-            auditLog.log(person, true, "getMedicalRecord");
+            auditLog.log(person, true, "readMedicalRecord");
             return medicalData;
         }else{
-            auditLog.log(person, false, "getMedicalRecord");
+            auditLog.log(person, false, "readMedicalRecord");
             return "Unauthorized user";
         }
     }

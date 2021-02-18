@@ -15,7 +15,7 @@ import javax.security.cert.X509Certificate;
 public class Server implements Runnable {
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
-    private static AuditLog auditLog;
+    private static AuditLog auditLog = new AuditLog("audit.txt");
 
     private Person connectedPerson;
 
@@ -77,8 +77,10 @@ public class Server implements Runnable {
                     case "delete" :
                         if(connectedPerson.getType().equals("government")) {
                             medicalRecords.remove(input[1]);
+                            auditLog.log(connectedPerson, true, "delete");
                             sb.append("Deleted records");
                         } else {
+                            auditLog.log(connectedPerson, false, "delete");
                             sb.append("Unauthorized user");
                         }
 
@@ -135,8 +137,8 @@ public class Server implements Runnable {
                 KeyStore ts = KeyStore.getInstance("JKS");
                 char[] password = "password".toCharArray();
 
-                ks.load(new FileInputStream("src/server/serverkeystore"), password);  // keystore password (storepass)
-                ts.load(new FileInputStream("src/server/servertruststore"), password); // truststore password (storepass)
+                ks.load(new FileInputStream("server/serverkeystore"), password);  // keystore password (storepass)
+                ts.load(new FileInputStream("server/servertruststore"), password); // truststore password (storepass)
                 kmf.init(ks, password); // certificate password (keypass)
                 tmf.init(ts);  // possible to use keystore as truststore here
                 ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);

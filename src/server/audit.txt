@@ -1,0 +1,2 @@
+Doktor Proktor called create at 2021-02-18T11:20:22.234
+Doktor Proktor called readMedicalRecord at 2021-02-18T11:20:34.281
