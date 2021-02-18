@@ -45,7 +45,7 @@ public class Client {
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
                 SSLContext ctx = SSLContext.getInstance("TLS");
-                ks.load(new FileInputStream("client/doctorkeystore"), password);  // keystore password (storepass)
+                ks.load(new FileInputStream("client/governmentkeystore"), password);  // keystore password (storepass)
                 ts.load(new FileInputStream("client/clienttruststore"), password); // truststore password (storepass);
                 kmf.init(ks, password); // user password (keypass)
                 tmf.init(ts); // keystore can be used as truststore here
@@ -101,14 +101,32 @@ public class Client {
                         System.out.print("Patient> ");
                         person = read.readLine();
                         System.out.println("Sending request to server");
-                        String tmp = in.readLine();
-                        if(tmp.equals("Invalid request")){
-                            break;
+                        out.println(msg + "," + person);
+                        String recordsFromServer = in.readLine();
+                        recordsFromServer = recordsFromServer.replaceAll(";", "\n");
+                        String[] records = recordsFromServer.split(",");
+                        int selected = 0;
+                        if(records.length == 1){
+                            System.out.println(records[0]);
+                        }else{
+                            for (int i = 0; i < records.length; i++) {
+                                System.out.println(i + ": " + records[i]);
+                                System.out.println("---------------------------------------");
+                            }
+                            System.out.println("Select>");
+                            selected = Integer.parseInt(read.readLine());
+                            System.out.println(selected);
                         }
-                        System.out.println(tmp);
                         System.out.println("> Write new log: ");
                         String log = read.readLine();
-                        out.println(log);
+                        records[selected] = records[selected] + "\n" + log;
+                        String outputRecordsToServer = "";
+                        for (int i = 0; i < records.length; i++){
+                            outputRecordsToServer = outputRecordsToServer + records[i] + ",";
+                        }
+                        outputRecordsToServer = outputRecordsToServer.replaceAll("\n", ";");// new line replacement
+                        System.out.println(outputRecordsToServer);
+                        out.println(outputRecordsToServer);
                         out.flush();
                         waitForResponse(in);
                         break;

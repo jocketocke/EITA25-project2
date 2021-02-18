@@ -2,6 +2,7 @@ package server;
 
 import server.persons.Person;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class MedicalRecord {
             if (doctor.getType().equals("Doctor")) {
                 this.patient = patient;
                 this.division = doctor.getDivision();
+                this.authorizedUsers.add(doctor.getName());
                 if (nurse != null) {
                     this.authorizedUsers.add(nurse);
                 }
@@ -31,8 +33,15 @@ public class MedicalRecord {
         }
     }
 
+    public boolean exists(){
+        if(auditLog == null){
+            return false;
+        }
+        return true;
+    }
+
     public String readMedicalRecord(Person person){
-        if(person.getName().equals(patient) || person.getType().equals("government")){
+        if(person.getName().equals(patient) || person.getType().equals("Government")){
             auditLog.log(person, true, "readMedicalRecord");
             return medicalData;
         }else if(person.getDivision().equals(division) && !person.getType().equals("patient")){
@@ -52,6 +61,11 @@ public class MedicalRecord {
             auditLog.log(person, true, "writeMedicalRecord");
             this.medicalData = medicalData;
         }else{
+            try {
+                throw new IOException();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             auditLog.log(person, false, "writeMedicalRecord");
         }
     }

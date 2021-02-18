@@ -58,24 +58,46 @@ public class Server implements Runnable {
                 LinkedList<MedicalRecord> records = medicalRecords.getOrDefault(input[1], new LinkedList<>());
                 switch (input[0]) {
                     case "read" :
-                        for (MedicalRecord temp : records) {
-                            sb.append(temp.readMedicalRecord(connectedPerson));
-                            sb.append(",");
-                        }
+                        String s = readMedicalRecord(records);
+                        sb = new StringBuilder(s);
                         break;
                     case "create" :
                         MedicalRecord record = new MedicalRecord(input[1], input[3], connectedPerson, input[2], auditLog);
-                        if(medicalRecords.containsKey(input[1])) {
-                            records.add(record);
-                        } else {
-                            records = new LinkedList<MedicalRecord>();
-                            records.add(record);
-                            medicalRecords.put(input[1], records);
+                        if(record.exists()) {
+                            if (medicalRecords.containsKey(input[1])) {
+                                records.add(record);
+                            } else {
+                                records = new LinkedList<MedicalRecord>();
+                                records.add(record);
+                                medicalRecords.put(input[1], records);
+                            }
+                            sb.append("Created record");
+                        }else{
+                            sb.append("Unauthorized user");
                         }
-                        sb.append("Created record");
+                        break;
+                    case "write":
+                        //input[1] = patient
+                        out.println(readMedicalRecord(records));
+                        String changedRecord = in.readLine();
+                        System.out.println(changedRecord);
+                        changedRecord = changedRecord.replaceAll(";", "\n");
+                        String[] changedRecords = changedRecord.split(",");
+                        int index = 0;
+                        for (MedicalRecord temp : records) {
+                            String medicalData = temp.readMedicalRecord(connectedPerson);
+                            if(medicalData.equals("Unauthorized user")){
+                                continue;
+                            }
+                            System.out.println("before: " + medicalData);
+                            temp.writeMedicalRecord(connectedPerson, changedRecords[index]);
+                            index++;
+                        }
+                        medicalRecords.put(input[1], records);
                         break;
                     case "delete" :
-                        if(connectedPerson.getType().equals("government")) {
+                        System.out.println(connectedPerson.getType());
+                        if(connectedPerson.getType().equals("Government")) {
                             medicalRecords.remove(input[1]);
                             auditLog.log(connectedPerson, true, "delete");
                             sb.append("Deleted records");
@@ -83,7 +105,6 @@ public class Server implements Runnable {
                             auditLog.log(connectedPerson, false, "delete");
                             sb.append("Unauthorized user");
                         }
-
                 }
 
                 String returnMessage = sb.toString();
@@ -104,6 +125,32 @@ public class Server implements Runnable {
             return;
         }
     }
+
+    private String readMedicalRecord(LinkedList<MedicalRecord> records) {
+        StringBuilder tempreader = new StringBuilder();
+        for (MedicalRecord temp : records) {
+            String medicalData = temp.readMedicalRecord(connectedPerson);
+            if(medicalData.equals("Unauthorized user")){
+                continue;
+            }
+            tempreader.append(medicalData);
+            tempreader.append(","); //Split records.
+        }
+        String s = tempreader.toString();
+        s = s.replaceAll("\n", ";");// new line replacement
+        return s;
+    }
+
+    //Replace \n with ;
+    private String replaceNewLine(String input){
+        return input.replaceAll("\n", ";");
+    }
+
+    //Replace ; with \n
+    private String returnNewLine(String input){
+        return input.replaceAll(";", "\n");
+    }
+
 
     private void newListener() { (new Thread(this)).start(); } // calls run()
 
