@@ -15,7 +15,7 @@ public class AuditLog {
     public AuditLog(String filename){
         this.filename = filename;
         try{
-            File auditLog = new File(filename);
+            File auditLog = new File("src/server/" + filename);
             Scanner reader = new Scanner(auditLog);
             stringBuilder = new StringBuilder();
             while(reader.hasNextLine()){
@@ -28,9 +28,6 @@ public class AuditLog {
         }
     }
 
-    public static void main(String[] args){
-        AuditLog a = new AuditLog("src/server/audit.txt");
-    }
 
     public void log(Person person, boolean bool, String s){
     }

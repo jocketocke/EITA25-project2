@@ -15,6 +15,7 @@ import javax.security.cert.X509Certificate;
 public class Server implements Runnable {
     private ServerSocket serverSocket = null;
     private static int numConnectedClients = 0;
+    private static AuditLog auditLog;
 
     private Person connectedPerson;
 
@@ -54,18 +55,18 @@ public class Server implements Runnable {
 
                 StringBuilder sb = new StringBuilder();
 
+                LinkedList<MedicalRecord> records = medicalRecords.getOrDefault(input[1], new LinkedList<>());
                 switch (input[0]) {
                     case "read" :
-                        LinkedList<MedicalRecord> records = medicalRecords.get(input[1]);
                         for (MedicalRecord temp : records) {
                             sb.append(temp.readMedicalRecord(connectedPerson));
                             sb.append(",");
                         }
                         break;
                     case "create" :
-                        MedicalRecord record = new MedicalRecord(input[1], input[3], connectedPerson, input[2], null);
+                        MedicalRecord record = new MedicalRecord(input[1], input[3], connectedPerson, input[2], auditLog);
                         if(medicalRecords.containsKey(input[1])) {
-                            medicalRecords.get(input[1]).add(record);
+                            records.add(record);
                         } else {
                             records = new LinkedList<MedicalRecord>();
                             records.add(record);
@@ -98,6 +99,7 @@ public class Server implements Runnable {
     private void newListener() { (new Thread(this)).start(); } // calls run()
 
     public static void main(String args[]) {
+        auditLog = new AuditLog("audit.txt");
         System.out.println("\nServer Started\n");
         int port = -1;
         if (args.length >= 1) {
@@ -126,8 +128,8 @@ public class Server implements Runnable {
                 KeyStore ts = KeyStore.getInstance("JKS");
                 char[] password = "password".toCharArray();
 
-                ks.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/server/serverkeystore"), password);  // keystore password (storepass)
-                ts.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/server/servertruststore"), password); // truststore password (storepass)
+                ks.load(new FileInputStream("src/server/serverkeystore"), password);  // keystore password (storepass)
+                ts.load(new FileInputStream("src/server/servertruststore"), password); // truststore password (storepass)
                 kmf.init(ks, password); // certificate password (keypass)
                 tmf.init(ts);  // possible to use keystore as truststore here
                 ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);

@@ -45,8 +45,8 @@ public class Client {
                 KeyManagerFactory kmf = KeyManagerFactory.getInstance("SunX509");
                 TrustManagerFactory tmf = TrustManagerFactory.getInstance("SunX509");
                 SSLContext ctx = SSLContext.getInstance("TLS");
-                ks.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/client/doctorkeystore"), password);  // keystore password (storepass)
-                ts.load(new FileInputStream("C:/Users/kalle/IdeaProjects/EITA25-project2/src/client/clienttruststore"), password); // truststore password (storepass);
+                ks.load(new FileInputStream("client/doctorkeystore"), password);  // keystore password (storepass)
+                ts.load(new FileInputStream("client/clienttruststore"), password); // truststore password (storepass);
                 kmf.init(ks, password); // user password (keypass)
                 tmf.init(ts); // keystore can be used as truststore here
                 ctx.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
@@ -101,7 +101,7 @@ public class Client {
                         person = read.readLine();
                         System.out.println("Sending request to server");
                         String tmp = in.readLine();
-                        if(tmp.equals("Invalid request"){
+                        if(tmp.equals("Invalid request")){
                             break;
                         }
                         System.out.println(tmp);
